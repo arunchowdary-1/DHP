@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>City Hatch - Find Your Dream Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .hero-section {
+            background-image: linear-gradient(rgba(10, 10, 10, 0.5), rgba(0, 0, 0, 0.7)), url('https://source.unsplash.com/random/1600x800/?luxury,realestate');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://source.unsplash.com/random/1600x800/?house,architecture') center/cover no-repeat;
+            filter: blur(5px) opacity(0.2);
+            animation: pulse 15s infinite alternate;
+            z-index: -1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        .floating-house {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>') center/contain no-repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: float 3s infinite ease-in-out;
+        }
+        .property-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .property-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #d02b2b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .modal-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-blue-800 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-2xl mr-2 text-yellow-400"></i>
+                    <h1 class="text-2xl font-bold"> City Hatch</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"></span>
+                    </button>
+                    <button id="loginBtn" class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition-colors">
+                        <i class="fas fa-user mr-1"></i> Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section py-16 md:py-24 text-white relative">
+        <!-- Animated floating houses -->
+        <div id="floating-houses"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="md:w-2/3">
+                <h1 class="text-3xl md:text-5xl font-bold mb-4 animate__animated animate__fadeInDown">Find Your Perfect Home</h1>
+                <p class="text-lg md:text-xl mb-8 animate__animated animate__fadeInUp">Discover thousands of properties across India's top cities</p>
+                <div class="bg-white p-4 rounded-lg shadow-lg animate__animated animate__fadeIn">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <input id="cityInput" class="search-input p-2 border border-gray-300 rounded text-black font-medium" placeholder="City">
+                        <select id="bhkSelect" class="search-select p-2 border border-gray-300 rounded text-black font-medium">
+                            <option value="">BHK</option>
+                            <option value="1">1 BHK</option>
+                            <option value="2">2 BHK</option>
+                            <option value="3">3 BHK</option>
+                            <option value="4">4 BHK</option>
+                            <option value="5">5+ BHK</option>
+                        </select>
+                        <select id="budgetSelect" class="search-select p-2 border border-gray-300 rounded text-black font-medium">
+                            <option value="">Budget</option>
+                            <option value="Below ₹50 L">Below ₹50 L</option>
+                            <option value="₹50 L - ₹1 Cr">₹50 L - ₹1 Cr</option>
+                            <option value="₹1 Cr - ₹2 Cr">₹1 Cr - ₹2 Cr</option>
+                            <option value="₹2 Cr+">₹2 Cr+</option>
+                        </select>
+                        <select id="typeSelect" class="search-select p-2 border border-gray-300 rounded text-black font-medium">
+                            <option value="">Property Type</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Independent House">Independent House</option>
+                            <option value="Plot">Plot</option>
+                        </select>
+                        <button id="searchBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors w-full">
+                            <i class="fas fa-search mr-1"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-10 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold">Properties</h2>
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-600">Sort by:</span>
+                    <select class="search-select p-1 border border-gray-300 rounded text-sm">
+                        <option>Newest First</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="propertyContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Property cards will be inserted here -->
+                <div class="animate-pulse bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-gray-300 h-48 w-full"></div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Loading...</h3>
+                        <p class="text-sm text-gray-500">Please wait while properties are loaded.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="paginationContainer" class="mt-8"></div>
+        </div>
+    </section>
+
+    <div id="loginModal" class="modal-bg">
+        <div class="relative bg-white rounded-lg max-w-md mx-auto mt-20 p-6">
+            <span id="closeLogin" class="absolute top-2 right-3 text-xl cursor-pointer">&times;</span>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Login to City Hatch</h3>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                <input type="tel" id="mobileInput" class="w-full p-2 border border-gray-300 rounded" placeholder="Enter your mobile number">
+            </div>
+            <button id="sendOtpBtn" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Send OTP</button>
+            
+            <div id="otpContainer" class="hidden mt-4">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">OTP</label>
+                    <input type="text" id="otpInput" class="w-full p-2 border border-gray-300 rounded" placeholder="Enter OTP">
+                </div>
+                <button id="verifyOtpBtn" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Verify OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-8 mt-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h4 class="text-xl font-semibold mb-4">About City Hatch </h4>
+                <p class="text-gray-400">Your trusted partner in finding the perfect home.</p>
+            </div>
+            <div>
+                <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
+                <ul class="text-gray-400 space-y-2">
+                    <li><a href="#" class="hover:text-yellow-300">Home</a></li>
+                    <li><a href="#" class="hover:text-yellow-300">Properties</a></li>
+                    <li><a href="#" class="hover:text-yellow-300">About Us</a></li>
+                    <li><a href="#" class="hover:text-yellow-300">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xl font-semibold mb-4">Contact Us</h4>
+                <p class="text-gray-400">Email: info@Cityhatch.com</p>
+                <p class="text-gray-400">Phone: +91 6281xxxxxx</p>
+            </div>
+        </div>
+        <div class="text-center mt-6 text-gray-500">
+            &copy; 2025 City Hatch. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // API URL
+        const API_URL = 'http://127.0.0.1:5000';
+        
+        // Global variables
+        let properties = [];
+        let currentPage = 1;
+        const propertiesPerPage = 8;
+        
+        // Create floating house animations
+        function createFloatingHouses() {
+            const container = document.getElementById('floating-houses');
+            const heroSection = document.querySelector('.hero-section');
+            
+            for (let i = 0; i < 15; i++) {
+                const house = document.createElement('div');
+                house.className = 'floating-house';
+                
+                // Random position
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = 3 + Math.random() * 4;
+                const size = 30 + Math.random() * 30;
+                
+                house.style.left = `${left}%`;
+                house.style.top = `${top}%`;
+                house.style.width = `${size}px`;
+                house.style.height = `${size}px`;
+                house.style.animationDelay = `${delay}s`;
+                house.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(house);
+            }
+        }
+
+        // Create property cards
+        function createPropertyCard(property) {
+            const card = document.createElement('div');
+            card.className = 'property-card bg-white rounded-lg shadow-md overflow-hidden animate__animated animate__fadeIn';
+            console.log(property)
+            card.innerHTML = `
+                <div class="relative">
+                    ${property.isNew ? '<span class="property-tag">NEW</span>' : ''}
+                    <img src="${property.image}" alt="${property.title}" class="w-full h-48 object-cover" onerror="this.src='https://source.unsplash.com/random/300x200/?apartment,house&sig=${Math.random()}'">
+                    <div class="absolute top-2 right-2 flex space-x-2">
+                        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100">
+                            <i class="far fa-heart text-red-500"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold mb-2 text-gray-800">${property.title}</h3>
+                    <p class="text-sm text-gray-600 mb-2"><i class="fas fa-map-marker-alt mr-1"></i> ${property.location}</p>
+                    <div class="flex flex-wrap gap-3 mb-3 text-sm text-gray-700">
+                        <span><i class="fas fa-bed mr-1"></i> ${property.bhk} BHK</span>
+                        <span><i class="fas fa-vector-square mr-1"></i> ${property.area}</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-bold text-green-600">${property.price}</span>
+                        <button onClick="showMap(${property.LATITUDE}, ${property.LONGITUDE})" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Map</button>
+                        <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Contact</button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function showMap(lati, longi) {
+          window.location.href = `map.html?lat=${encodeURIComponent(lati)}&lng=${encodeURIComponent(longi)}`;
+        }
+
+  // Replace the formatPrice function in index1.html with this corrected version
+function formatPrice(priceLakhs) {
+    // Handle empty or null values
+    if (priceLakhs === null || priceLakhs === undefined || priceLakhs === 'N/A' || priceLakhs === '') {
+        return 'Price on Request';
+    }
+    
+    // Make sure we have a clean number to work with
+    let numericPrice;
+    if (typeof priceLakhs === 'string') {
+        numericPrice = parseFloat(priceLakhs.replace(/[^0-9.]/g, ''));
+    } else {
+        numericPrice = parseFloat(priceLakhs);
+    }
+    
+    if (isNaN(numericPrice)) {
+        return 'Price on Request';
+    }
+
+    return `₹${priceLakhs}`
+}
+        // Fetch properties from API based on city and filters
+        async function fetchPropertiesForCity(city, filters = {}) {
+            try {
+                if (!city) {
+                    alert('Please select a city');
+                    return;
+                }
+                
+                propertyContainer.innerHTML = '<div class="text-center p-4">Loading properties...</div>';
+                
+                let url = `${API_URL}/data/${city}`;
+                const queryParams = new URLSearchParams();
+                
+                if (filters.bhk) queryParams.append('bhk', filters.bhk);
+                queryParams.append('limit', 100);
+                
+                if (queryParams.toString()) url += `?${queryParams.toString()}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Failed to fetch properties for ${city}`);
+                
+                const data = await response.json();
+                console.log("Raw data from API:", data);
+                
+                properties = data.map(property => ({
+                    title: property.name || 'Unnamed Property',
+                    location: property.location || 'Location N/A',
+                    bhk: property.bhk || 'N/A',
+                    area: property.area_sqft ? `${property.area_sqft} sq.ft` : 'Area N/A',
+                    price: formatPrice(property.price_lakhs),
+                    image: property.url || `https://source.unsplash.com/random/300x200/?apartment,house&sig=${Math.random()}`,
+                    type: property.type || 'Apartment',
+                    isNew: Math.random() > 0.7,
+                    LATITUDE:property.LATITUDE,
+                    LONGITUDE:property.LONGITUDE,
+                }));
+                
+                currentPage = 1;
+                renderProperties();
+            } catch (error) {
+                console.error('Error:', error);
+                propertyContainer.innerHTML = '<div class="text-center p-4 text-red-500">Failed to load properties. Please try again.</div>';
+            }
+        }
+
+        // Filter properties based on user selections
+        function filterProperties() {
+            const bhk = bhkSelect.value ? parseInt(bhkSelect.value) : null;
+            const budget = budgetSelect.value;
+            const type = typeSelect.value;
+            
+            return properties.filter(property => {
+                if (bhk !== null) {
+                    const propertyBhk = parseInt(property.bhk);
+                    if (isNaN(propertyBhk) || propertyBhk !== bhk) return false;
+                }
+                
+                if (budget) {
+                    const price = property.price;
+                    
+                    // Extract numeric value and unit from price string
+                    let priceValue;
+                    let inCrores = false;
+                    
+                    if (price.includes('Cr')) {
+                        const match = price.match(/₹([\d.]+) Cr/);
+                        if (match) {
+                            priceValue = parseFloat(match[1]);
+                            inCrores = true;
+                        }
+                    } else if (price.includes('Lakhs')) {
+                        const match = price.match(/₹([\d.]+) Lakhs/);
+                        if (match) {
+                            priceValue = parseFloat(match[1]);
+                            inCrores = false;
+                        }
+                    }
+                    
+                    if (priceValue === undefined || isNaN(priceValue)) {
+                        return false;
+                    }
+                    
+                    // Convert everything to crores for consistent comparison
+                    const valueInCrores = inCrores ? priceValue : priceValue / 100;
+                    
+                    switch(budget) {
+                        case 'Below ₹50 L':
+                            return valueInCrores < 0.5;  // 50 Lakhs = 0.5 Crores
+                        case '₹50 L - ₹1 Cr':
+                            return valueInCrores >= 0.5 && valueInCrores <= 1;
+                        case '₹1 Cr - ₹2 Cr':
+                            return valueInCrores > 1 && valueInCrores <= 2;
+                        case '₹2 Cr+':
+                            return valueInCrores > 2;
+                        default:
+                            return true;
+                    }
+                }
+                
+                
+                if (type && property.type !== type) return false;
+                
+                return true;
+            });
+        }
+
+        // Render properties with pagination
+        function renderProperties() {
+            propertyContainer.innerHTML = '';
+            const filteredProperties = filterProperties();
+            console.log(filteredProperties)
+            if (filteredProperties.length === 0) {
+                propertyContainer.innerHTML = `
+                    <div class="col-span-full text-center py-10">
+                        <h3 class="text-xl font-bold mb-2">No properties found</h3>
+                        <p class="text-gray-600">Try changing your filters to see more results</p>
+                    </div>`;
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+            const startIndex = (currentPage - 1) * propertiesPerPage;
+            const endIndex = Math.min(startIndex + propertiesPerPage, filteredProperties.length);
+            
+            const currentProperties = filteredProperties.slice(startIndex, endIndex);
+            
+            currentProperties.forEach(property => {
+                propertyContainer.appendChild(createPropertyCard(property));
+            });
+            
+            renderPagination(totalPages);
+        }
+
+        // Render pagination controls
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const paginationDiv = document.createElement('div');
+            paginationDiv.className = 'flex items-center justify-center space-x-2 mt-4';
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerHTML = '&laquo; Prev';
+                prevBtn.className = 'px-3 py-1 bg-gray-200 rounded hover:bg-gray-300';
+                prevBtn.addEventListener('click', () => {
+                    currentPage--;
+                    renderProperties();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                paginationDiv.appendChild(prevBtn);
+            }
+            
+            // Show page numbers (with ellipsis for large numbers)
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            // Add first page and ellipsis if needed
+            if (startPage > 1) {
+                addPageButton(1, paginationDiv);
+                if (startPage > 2) addEllipsis(paginationDiv);
+            }
+            
+            // Add numbered page buttons
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i, paginationDiv, i === currentPage);
+            }
+            
+            // Add last page and ellipsis if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) addEllipsis(paginationDiv);
+                addPageButton(totalPages, paginationDiv);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.innerHTML = 'Next &raquo;';
+                nextBtn.className = 'px-3 py-1 bg-gray-200 rounded hover:bg-gray-300';
+                nextBtn.addEventListener('click', () => {
+                    currentPage++;
+                    renderProperties();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                paginationDiv.appendChild(nextBtn);
+            }
+            
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(paginationDiv);
+        }
+        
+        // Helper function to add page button
+        function addPageButton(pageNum, container, isActive = false) {
+            const btn = document.createElement('button');
+            btn.textContent = pageNum;
+            btn.className = isActive
+                ? 'px-3 py-1 bg-blue-600 text-white rounded'
+                : 'px-3 py-1 bg-gray-200 rounded hover:bg-gray-300';
+            
+            btn.addEventListener('click', () => {
+                if (pageNum !== currentPage) {
+                    currentPage = pageNum;
+                    renderProperties();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            
+            container.appendChild(btn);
+        }
+        
+        // Helper function to add ellipsis
+        function addEllipsis(container) {
+            const span = document.createElement('span');
+            span.textContent = '...';
+            span.className = 'px-2';
+            container.appendChild(span);
+        }
+
+        // Fetch available cities from API
+        async function fetchCities() {
+            try {
+                const response = await fetch(`${API_URL}/cities`);
+                if (!response.ok) throw new Error('Failed to fetch cities');
+                
+                const data = await response.json();
+                if (data.available_cities && data.available_cities.length > 0) {
+                    const datalist = document.createElement('datalist');
+                    datalist.id = 'cityOptions';
+                    
+                    data.available_cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        datalist.appendChild(option);
+                    });
+                    
+                    document.body.appendChild(datalist);
+                    cityInput.setAttribute('list', 'cityOptions');
+                    
+                    cityInput.value = data.available_cities[0];
+                    fetchPropertiesForCity(data.available_cities[0]);
+                }
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+                alert('Failed to load cities. Please check if the backend server is running.');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingHouses();
+            fetchCities();
+            
+            // Search button
+            searchBtn.addEventListener('click', () => {
+                const selectedCity = cityInput.value;
+                const filters = {};
+                if (bhkSelect.value) filters.bhk = bhkSelect.value;
+                fetchPropertiesForCity(selectedCity, filters);
+            });
+            
+            // Login modal
+            loginBtn.addEventListener('click', () => {
+                document.getElementById('loginModal').style.display = 'flex';
+            });
+            
+            document.getElementById('closeLogin').addEventListener('click', () => {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+            
+            document.getElementById('loginModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('loginModal')) {
+                    document.getElementById('loginModal').style.display = 'none';
+                }
+            });
+            
+            // OTP flow
+            document.getElementById('sendOtpBtn').addEventListener('click', () => {
+                const mobile = document.getElementById('mobileInput').value.trim();
+                if (mobile && mobile.length === 10) {
+                    document.getElementById('otpContainer').classList.remove('hidden');
+                    document.getElementById('sendOtpBtn').textContent = 'Resend OTP';
+                    alert('OTP sent to ' + mobile);
+                } else {
+                    alert('Please enter a valid 10-digit mobile number');
+                }
+            });
+            
+            document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+                const otp = document.getElementById('otpInput').value.trim();
+                if (otp && otp.length === 4) {
+                    alert('Login successful!');
+                    document.getElementById('loginModal').style.display = 'none';
+                    loginBtn.innerHTML = '<i class="fas fa-user-circle"></i> My Account';
+                } else {
+                    alert('Please enter a valid OTP');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

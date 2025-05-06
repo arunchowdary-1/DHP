@@ -1,0 +1,437 @@
+/* Add this to your existing styles.css file or create it if it doesn't exist */
+
+/* Scrollable property container */
+.properties-scroll-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 properties per row */
+  gap: 20px;
+  width: 100%;
+  max-height: 800px; /* Limit height to enable scrolling */
+  overflow-y: auto; /* Vertical scroll */
+  padding: 20px 0;
+  scroll-behavior: smooth;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1400px) {
+  .properties-scroll-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 properties per row */
+  }
+}
+
+@media (max-width: 1100px) {
+  .properties-scroll-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 properties per row */
+  }
+}
+
+@media (max-width: 768px) {
+  .properties-scroll-container {
+    grid-template-columns: 1fr; /* 1 per row */
+  }
+}
+
+/* Scrollbar styling */
+.properties-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+.properties-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+.properties-scroll-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.properties-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Property card styling */
+.property-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.property-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.property-card:hover .property-image img {
+  transform: scale(1.05);
+}
+
+.property-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff6b6b;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.property-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.action-btn:hover {
+  background: white;
+}
+
+.property-card-content {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-card-content h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.property-location {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.property-location i {
+  margin-right: 5px;
+  color: #ff6b6b;
+}
+
+.property-features {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.property-features span {
+  font-size: 0.85rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+
+.property-features i {
+  margin-right: 5px;
+  color: #3b82f6;
+}
+
+.property-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.property-price {
+  font-weight: 700;
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.contact-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.contact-btn:hover {
+  background: #2563eb;
+}
+
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-results h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-results p {
+  color: #666;
+}
+
+/* Loading message */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+
+/* Responsive grid adjustments */
+@media (max-width: 1400px) {
+  .properties-scroll-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 properties per row on smaller screens */
+  }
+}
+
+@media (max-width: 1100px) {
+  .properties-scroll-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 properties per row on tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .properties-scroll-container {
+    grid-template-columns: 1fr; /* 1 property per row on mobile */
+  }
+}
+
+/* Scrollbar styling */
+.properties-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.properties-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.properties-scroll-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.properties-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Property card styling */
+.property-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.property-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.property-card:hover .property-image img {
+  transform: scale(1.05);
+}
+
+.property-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff6b6b;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.property-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.action-btn:hover {
+  background: white;
+}
+
+.property-card-content {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-card-content h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.property-location {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.property-location i {
+  margin-right: 5px;
+  color: #ff6b6b;
+}
+
+.property-features {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.property-features span {
+  font-size: 0.85rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+
+.property-features i {
+  margin-right: 5px;
+  color: #3b82f6;
+}
+
+.property-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.property-price {
+  font-weight: 700;
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.contact-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.contact-btn:hover {
+  background: #2563eb;
+}
+
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-results h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-results p {
+  color: #666;
+}
+
+/* Loading message */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #666;
+}
