@@ -1,7 +1,7 @@
 console.log("JS file is linked correctly.");
 
 // API URL - Change this to your Flask server address when deploying
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = 'https://dhp-w53a.onrender.com/';
 
 // Global variables
 let properties = [];
